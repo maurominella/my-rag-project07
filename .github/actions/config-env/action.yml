@@ -56,6 +56,12 @@ runs:
         echo "Now I will show the client ID with clientID"
         echo clientId
         echo "End of showing the client ID with"
+
+        echo "I will now show AZURE_ENV_NAME"
+        azure_env_name=$(echo $AZURE_ENV_NAME)
+        echo azure_env_name
+        echo "is the azure_env_name visible? I hope it is!"
+
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
         subscriptionId=${{ inputs.AZURE_SUBSCRIPTION_ID }}
         principalId=$(az ad sp list --filter "appId eq '$clientId'" --query "[].id" -o tsv)
