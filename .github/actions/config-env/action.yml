@@ -76,13 +76,21 @@ runs:
         '64702f94-c441-49e6-a78b-ef80e0188fee'  # Azure AI Developer
         )
 
+        echo "🔶🔶🔶MAUROMI MODIFIED ROLES ASSIGNMENT START"
         for roleId in "${roles[@]}"; do
-        az role assignment create \
-          --assignee-object-id "$principalId" \
-          --assignee-principal-type "ServicePrincipal" \
-          --role "$roleId" \
-          --scope "$scope"
+          # Check if the role assignment exists  
+          assignment=$(az role assignment list --assignee $principalId --scope $scope --role $roleId --query [].id -o tsv)
+
+          if [ -z "$assignment" ]; then
+            az role assignment create \
+              --assignee-object-id "$principalId" \
+              --assignee-principal-type "ServicePrincipal" \
+              --role "$roleId" \
+              --scope "$scope"
+          else
+            echo "Role assignment already exists." 
         done
+        echo "🔶🔶🔶MAUROMI MODIFIED ROLES ASSIGNMENT END"
 
 
     - name: Login to Azure Developer CLI 
