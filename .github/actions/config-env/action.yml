@@ -47,6 +47,7 @@ runs:
       shell: bash
       run: |
         echo "Setting permissions for service principal..."
+        $(echo $AZURE_CREDENTIALS | jq -r .clientId)
         AZURE_CREDENTIALS=$(echo '${{ inputs.AZURE_CREDENTIALS }}' | jq -r .)
         tenantId=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
         rg=rg-${{ inputs.AZURE_ENV_NAME }}
