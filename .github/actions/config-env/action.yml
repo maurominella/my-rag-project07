@@ -134,7 +134,7 @@ runs:
           "PROMPTFLOW_WORKER_NUM"
         )
 
-        echo "Running Provision environment (check manual_environment)..."
+        echo "🔶🔶🔶MAUROMI Running Provision environment (check manual_environment)..."
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
         if [ "$manual_environment" = "true" ]; then
           echo "🔶 | Manual Provisioning enabled. Action will just output variable values."
@@ -145,7 +145,7 @@ runs:
             export $VAR=$VALUE            
           done
         else
-          echo "🔶 | NON-Manual Provisioning enabled."
+          echo "🔶🔶🔶MAUROMI | NON-Manual Provisioning enabled."
           # Initialize azd
           export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
           export AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
@@ -161,6 +161,7 @@ runs:
             deployment_exists=false
           else
             echo "🔶 | Previous deployment exists." 
+            echo "🔶🔶🔶MAUROMI | Previous deployment exists."
             deployment_exists=true
           fi
         
@@ -172,12 +173,19 @@ runs:
           fi
 
           # Checking if the resource group exists
+          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists"
           export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
             resource_group_exist=false
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
-          fi        
+          fi
+
+          echo "🔶🔶🔶MAUROMI | End of Checking if the resource group exists"
+          echo $resource_group_exist
+          echo resource_group_exist -> $resource_group_exist
+
+          echo "🔶🔶🔶MAUROMI |Is p revious deployment UN-EXISTING?"    
           echo "🔶 | Resource group ${AZURE_RESOURCE_GROUP:-'Undefined'} exist status: $resource_group_exist"
 
           # Previous deployment exists but the resource group doesn't. 
@@ -260,7 +268,7 @@ runs:
           echo "🔶 | Running post-provisioning script to populate sample data." 
           ./infra/hooks/postprovision.sh 
         fi
-        
+
         echo "DONE Provision environment"      
 
 outputs:
