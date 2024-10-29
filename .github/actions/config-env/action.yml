@@ -47,11 +47,12 @@ runs:
       shell: bash
       run: |
         echo "Setting permissions for service principal..."
-        $(echo $AZURE_CREDENTIALS | jq -r .clientId)
         AZURE_CREDENTIALS=$(echo '${{ inputs.AZURE_CREDENTIALS }}' | jq -r .)
         tenantId=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
         rg=rg-${{ inputs.AZURE_ENV_NAME }}
         clientId=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
+        echo "Now I will show the client ID"
+        echo $clientId
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
         subscriptionId=${{ inputs.AZURE_SUBSCRIPTION_ID }}
         principalId=$(az ad sp list --filter "appId eq '$clientId'" --query "[].id" -o tsv)
