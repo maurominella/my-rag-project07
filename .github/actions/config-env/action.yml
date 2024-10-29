@@ -89,7 +89,7 @@ runs:
               --role "$roleId" \  
               --scope "$scope"  
           else  
-            echo "Role assignment already exists."  
+            echo "🔶🔶🔶 Role assignment already exists (by mauromi)."  
           fi  
           
         done  
@@ -185,18 +185,20 @@ runs:
           fi
 
           # Checking if the resource group exists
-          echo $AZURE_RESOURCE_GROUP
-          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists"
+          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists - START"
           export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          echo $AZURE_RESOURCE_GROUP
           echo "🔶🔶🔶MAUROMI check the values in the environment"
           echo $(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }})
+          export my_output = $(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }})
+          echo $my_output
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-            resource_group_exist = true # should be false "🔶🔶🔶MAUROMI. THE ERROR IS HERE!
+            resource_group_exist = true # 🔶🔶🔶MAUROMI should be false THE ERROR IS HERE!
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
           fi
 
-          echo "🔶🔶🔶MAUROMI | End of Checking if the resource group exists"
+          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists - END"
           echo $resource_group_exist
           echo "🔶🔶🔶MAUROMI | AZURE_RESOURCE_GROUP:"
           echo $AZURE_RESOURCE_GROUP
