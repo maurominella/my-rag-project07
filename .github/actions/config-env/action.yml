@@ -59,7 +59,7 @@ runs:
 
         echo "I will now show AZURE_ENV_NAME"
         azure_env_name=$(echo $AZURE_ENV_NAME)
-        echo azure_env_name
+        echo $azure_env_name
         echo "is the azure_env_name visible? I hope it is!"
 
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
