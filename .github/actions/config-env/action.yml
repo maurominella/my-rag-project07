@@ -58,7 +58,7 @@ runs:
         echo "End of showing the client ID with"
 
         echo "I will now show AZURE_ENV_NAME"
-        azure_env_name=$(echo $AZURE_ENV_NAME)
+        azure_env_name=${{ inputs.AZURE_ENV_NAME }}
         echo $azure_env_name
         echo "is the azure_env_name visible? I hope it is!"
 
