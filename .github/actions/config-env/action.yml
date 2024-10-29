@@ -51,9 +51,11 @@ runs:
         tenantId=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
         rg=rg-${{ inputs.AZURE_ENV_NAME }}
         clientId=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
-        echo "Now I will show the client ID"
+        echo "Now I will show the client ID with $clientID"
         echo $clientId
+        echo "Now I will show the client ID with clientID"
         echo clientId
+        echo "End of showing the client ID with"
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
         subscriptionId=${{ inputs.AZURE_SUBSCRIPTION_ID }}
         principalId=$(az ad sp list --filter "appId eq '$clientId'" --query "[].id" -o tsv)
