@@ -51,6 +51,12 @@ runs:
         tenantId=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
         rg=rg-${{ inputs.AZURE_ENV_NAME }}
         clientId=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
+
+        echo "I will now show AZURE_ENV_NAME"
+        azure_env_name=${{ inputs.AZURE_ENV_NAME }}
+        echo $azure_env_name
+        echo "is the azure_env_name visible? I hope it is!"
+
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
         subscriptionId=${{ inputs.AZURE_SUBSCRIPTION_ID }}
         principalId=$(az ad sp list --filter "appId eq '$clientId'" --query "[].id" -o tsv)
@@ -70,13 +76,25 @@ runs:
         '64702f94-c441-49e6-a78b-ef80e0188fee'  # Azure AI Developer
         )
 
-        for roleId in "${roles[@]}"; do
-        az role assignment create \
-          --assignee-object-id "$principalId" \
-          --assignee-principal-type "ServicePrincipal" \
-          --role "$roleId" \
-          --scope "$scope"
-        done
+        echo "🔶🔶🔶MAUROMI MODIFIED ROLES ASSIGNMENT START"  
+          
+        for roleId in "${roles[@]}"; do  
+          # Check if the role assignment exists  
+          assignment=$(az role assignment list --assignee $principalId --scope $scope --role $roleId --query [].id -o tsv)  
+            
+          if [ -z "$assignment" ]; then  
+            az role assignment create \  
+              --assignee-object-id "$principalId" \  
+              --assignee-principal-type "ServicePrincipal" \  
+              --role "$roleId" \  
+              --scope "$scope"  
+          else  
+            echo "🔶🔶🔶 Role assignment already exists (by mauromi)."  
+          fi  
+          
+        done  
+          
+        echo "🔶🔶🔶MAUROMI MODIFIED ROLES ASSIGNMENT END"  
 
 
     - name: Login to Azure Developer CLI 
@@ -98,6 +116,7 @@ runs:
       shell: bash
       id: setup-env-step
       run: |
+        echo "Running Provision environment (VARIABLES)..."
         VARIABLES=(
           "AZUREAI_HUB_NAME" 
           "AZUREAI_PROJECT_NAME" 
@@ -127,6 +146,7 @@ runs:
           "PROMPTFLOW_WORKER_NUM"
         )
 
+        echo "🔶🔶🔶MAUROMI Running Provision environment (check manual_environment)..."
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
         if [ "$manual_environment" = "true" ]; then
           echo "🔶 | Manual Provisioning enabled. Action will just output variable values."
@@ -137,6 +157,7 @@ runs:
             export $VAR=$VALUE            
           done
         else
+          echo "🔶🔶🔶MAUROMI | NON-Manual Provisioning enabled."
           # Initialize azd
           export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
           export AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
@@ -152,6 +173,7 @@ runs:
             deployment_exists=false
           else
             echo "🔶 | Previous deployment exists." 
+            echo "🔶🔶🔶MAUROMI | Previous deployment exists."
             deployment_exists=true
           fi
         
@@ -163,12 +185,26 @@ runs:
           fi
 
           # Checking if the resource group exists
+          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists - START"
           export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          export AZURE_RESOURCE_GROUP="rg-my-rag-project07"
+          echo $AZURE_RESOURCE_GROUP
+          echo "🔶🔶🔶MAUROMI check the values in the environment"
+          echo $(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }})
+          export my_output = $(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }})
+          echo $my_output
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
-            resource_group_exist=false
+            resource_group_exist = true # 🔶🔶🔶MAUROMI should be false THE ERROR IS HERE!
           else
             resource_group_exist=$(az group exists --name "$AZURE_RESOURCE_GROUP")  
-          fi        
+          fi
+
+          echo "🔶🔶🔶MAUROMI | Checking if the resource group exists - END"
+          echo $resource_group_exist
+          echo "🔶🔶🔶MAUROMI | AZURE_RESOURCE_GROUP:"
+          echo $AZURE_RESOURCE_GROUP
+
+          echo "🔶🔶🔶MAUROMI |Is p revious deployment UN-EXISTING?"    
           echo "🔶 | Resource group ${AZURE_RESOURCE_GROUP:-'Undefined'} exist status: $resource_group_exist"
 
           # Previous deployment exists but the resource group doesn't. 
@@ -228,6 +264,7 @@ runs:
 
         # Updating environment variables after provisioning
 
+        echo "Running Provision environment (for VAR in "${VARIABLES[@]}"; do)..."
         for VAR in "${VARIABLES[@]}"; do
             # Retrieve value from Azure environment
             VALUE_OUTPUT=$(azd env get-values -e "$AZURE_ENV_NAME" | grep $VAR | cut -d'=' -f2 | tr -d '"' || true)
@@ -250,6 +287,8 @@ runs:
           echo "🔶 | Running post-provisioning script to populate sample data." 
           ./infra/hooks/postprovision.sh 
         fi
+
+        echo "DONE Provision environment"      
 
 outputs:
   AZUREAI_HUB_NAME:
