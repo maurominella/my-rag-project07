@@ -173,6 +173,7 @@ runs:
           fi
 
           # Checking if the resource group exists
+          echo $AZURE_RESOURCE_GROUP
           echo "🔶🔶🔶MAUROMI | Checking if the resource group exists"
           export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
           if [ -z "$AZURE_RESOURCE_GROUP" ]; then
@@ -183,7 +184,8 @@ runs:
 
           echo "🔶🔶🔶MAUROMI | End of Checking if the resource group exists"
           echo $resource_group_exist
-          echo resource_group_exist -> $resource_group_exist
+          echo "🔶🔶🔶MAUROMI | AZURE_RESOURCE_GROUP:"
+          echo $AZURE_RESOURCE_GROUP
 
           echo "🔶🔶🔶MAUROMI |Is p revious deployment UN-EXISTING?"    
           echo "🔶 | Resource group ${AZURE_RESOURCE_GROUP:-'Undefined'} exist status: $resource_group_exist"
