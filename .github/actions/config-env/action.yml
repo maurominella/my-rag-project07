@@ -53,6 +53,7 @@ runs:
         clientId=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
         echo "Now I will show the client ID"
         echo $clientId
+        echo clientId
         clientSecret=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret) 
         subscriptionId=${{ inputs.AZURE_SUBSCRIPTION_ID }}
         principalId=$(az ad sp list --filter "appId eq '$clientId'" --query "[].id" -o tsv)
