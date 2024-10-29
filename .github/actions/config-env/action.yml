@@ -51,11 +51,6 @@ runs:
         tenantId=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)
         rg=rg-${{ inputs.AZURE_ENV_NAME }}
         clientId=$(echo $AZURE_CREDENTIALS | jq -r .clientId)
-        echo "Now I will show the client ID with $clientID"
-        echo $clientId
-        echo "Now I will show the client ID with clientID"
-        echo clientId
-        echo "End of showing the client ID with"
 
         echo "I will now show AZURE_ENV_NAME"
         azure_env_name=${{ inputs.AZURE_ENV_NAME }}
@@ -109,6 +104,7 @@ runs:
       shell: bash
       id: setup-env-step
       run: |
+        echo "Running Provision environment (VARIABLES)..."
         VARIABLES=(
           "AZUREAI_HUB_NAME" 
           "AZUREAI_PROJECT_NAME" 
@@ -138,6 +134,7 @@ runs:
           "PROMPTFLOW_WORKER_NUM"
         )
 
+        echo "Running Provision environment (check manual_environment)..."
         manual_environment=${{ inputs.MANUAL_PROVISIONING || 'false' }}
         if [ "$manual_environment" = "true" ]; then
           echo "🔶 | Manual Provisioning enabled. Action will just output variable values."
@@ -148,6 +145,7 @@ runs:
             export $VAR=$VALUE            
           done
         else
+          echo "🔶 | NON-Manual Provisioning enabled."
           # Initialize azd
           export AZURE_SUBSCRIPTION_ID="${{ inputs.AZURE_SUBSCRIPTION_ID }}"
           export AZURE_LOCATION="${{ inputs.AZURE_LOCATION }}"
@@ -239,6 +237,7 @@ runs:
 
         # Updating environment variables after provisioning
 
+        echo "Running Provision environment (for VAR in "${VARIABLES[@]}"; do)..."
         for VAR in "${VARIABLES[@]}"; do
             # Retrieve value from Azure environment
             VALUE_OUTPUT=$(azd env get-values -e "$AZURE_ENV_NAME" | grep $VAR | cut -d'=' -f2 | tr -d '"' || true)
@@ -261,6 +260,8 @@ runs:
           echo "🔶 | Running post-provisioning script to populate sample data." 
           ./infra/hooks/postprovision.sh 
         fi
+        
+        echo "DONE Provision environment"      
 
 outputs:
   AZUREAI_HUB_NAME:
