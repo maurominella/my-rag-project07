@@ -187,6 +187,7 @@ runs:
           # Checking if the resource group exists
           echo "🔶🔶🔶MAUROMI | Checking if the resource group exists - START"
           export AZURE_RESOURCE_GROUP=$(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }} | grep AZURE_RESOURCE_GROUP | cut -d'=' -f2 | tr -d '"' || true)
+          export AZURE_RESOURCE_GROUP="rg-my-rag-project07"
           echo $AZURE_RESOURCE_GROUP
           echo "🔶🔶🔶MAUROMI check the values in the environment"
           echo $(azd env get-values -e ${{ inputs.AZURE_ENV_NAME }})
